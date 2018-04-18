@@ -6,7 +6,7 @@ module.exports = function(app) {
     const apiRoutes = express.Router()
 
     app.post('/auth', auth.authenticateUser)
-    app.post('/newuser', auth.addUser)
+    app.post('/register', auth.registerUser)
 
     apiRoutes.use(function(req, res, next) {
         auth.verifyAccessTokenMiddleware(req, res, next)

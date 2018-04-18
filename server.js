@@ -2,15 +2,21 @@
 // get the packages needed
 // =======================
 const express       = require('express')
-const app           = express()
 const mongoose      = require('mongoose')
 const bodyParser    = require('body-parser')
+const cors          = require('cors')
 const config        = require('./config/config')
 
 // =======================
 // configuration =========
 // =======================
 const port = process.env.PORT || 3000
+const app = express()
+app.use(cors())
+app.use(bodyParser.urlencoded({
+    extended: true
+}))
+app.use(bodyParser.json())
 // eslint-disable-next-line
 const Contact = require('./api/models/userListModel')
 // eslint-disable-next-line
@@ -22,11 +28,6 @@ mongoose.connect(config.database, (err) => {
     if (err) throw err
     console.log('Successfully connected.')
 })
-
-app.use(bodyParser.urlencoded({
-    extended: true
-}))
-app.use(bodyParser.json())
 
 const routes = require('./api/routes/userListRoutes')
 routes(app)

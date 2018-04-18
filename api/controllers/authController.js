@@ -40,7 +40,7 @@ exports.authenticateUser = (req, res) => {
     })
 }
 
-exports.addUser = function(req, res){
+exports.registerUser = function(req, res){
     let query = { username: req.body.username }
     User.findOne(query, (err ,user) => {
         if (user) {
