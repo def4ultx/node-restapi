@@ -1,17 +1,29 @@
 'use strict'
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-var UserSchema = new Schema({
-    firstName: {
+const UserSchema = new Schema({
+    firstname: {
         type: String,
         Required: 'Please enter'
     },
-    lastName: {
+    lastname: {
         type: String,
         Required: 'Please enter'
     },
     email: {
+        type: String,
+        Required: 'Please enter'
+    },
+    mobile: {
+        type: String,
+        Required: 'Please enter'
+    },
+    facebook: {
+        type: String,
+        Required: 'Please enter'
+    },
+    image: {
         type: String,
         Required: 'Please enter'
     },
@@ -21,4 +33,4 @@ var UserSchema = new Schema({
     },
 })
 
-module.exports = mongoose.model('Users', UserSchema)
+module.exports = mongoose.model('Contacts', UserSchema)

@@ -1,9 +1,9 @@
 'use strict'
-var mongoose = require('mongoose')
-User = mongoose.model('Users')
+const mongoose = require('mongoose')
+const User = mongoose.model('Contacts')
 
 exports.listAllUsers = function(req, res){
-    var query = { sort: { firstName: 1 } }
+    var query = { sort: { firstname: 1 } }
     User.find({}, null, query, function(err, user){
         if(err) throw err
         //console.log(user)
@@ -32,7 +32,7 @@ exports.deleteAUser = function(req, res){
     User.findByIdAndRemove(req.params.userId, function(err, user){
         if(err) throw err
         const response = {
-            message: "Delete user id: "+ req.params.userId +" successfully",
+            message: 'Delete user id: '+ req.params.userId +' successfully',
             id: user._id
         }
         res.json(response)

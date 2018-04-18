@@ -1,13 +1,25 @@
 'use strict'
-module.exports = function(app){
-    var userList = require('../controllers/userListController')
+const express       = require('express')
+module.exports = function(app) {
+    const userList = require('../controllers/userListController')
+    const auth = require('../controllers/authController')
+    const apiRoutes = express.Router()
 
-    app.route('/users')
+    app.post('/auth', auth.authenticateUser)
+    app.post('/newuser', auth.addUser)
+
+    apiRoutes.use(function(req, res, next) {
+        auth.verifyAccessTokenMiddleware(req, res, next)
+    })
+
+    apiRoutes.route('/users')
         .get(userList.listAllUsers)
         .post(userList.createAUser)
 
-    app.route('/users/:userId')
+    apiRoutes.route('/users/:userId')
         .get(userList.readAUser)
         .delete(userList.deleteAUser)
         .post(userList.updateAUser)
+
+    app.use('/api', apiRoutes)
 }
