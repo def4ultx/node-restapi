@@ -1,4 +1,7 @@
 module.exports = {
-    'secret': 'secret',
-    'database': 'mongodb://localhost:27017/Contactdb'
+    'database': 'mongodb://localhost:27017/Contactdb',
+    'audience': 'vue-crud',
+    'issuer': 'Node RESTful API',
+    'privateKeyFilePath': './assets/privateKey.rsa',
+    'publicKeyFilePath': './assets/publicKey.pub'
 }

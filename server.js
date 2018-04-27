@@ -5,6 +5,7 @@ const express       = require('express')
 const mongoose      = require('mongoose')
 const bodyParser    = require('body-parser')
 const cors          = require('cors')
+const morgan        = require('morgan')
 const config        = require('./config/config')
 
 // =======================
@@ -17,6 +18,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 app.use(bodyParser.json())
+app.use(morgan('dev'))
+global.config = config
 // eslint-disable-next-line
 const Contact = require('./api/models/userListModel')
 // eslint-disable-next-line

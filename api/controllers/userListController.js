@@ -40,13 +40,13 @@ exports.deleteAUser = function(req, res){
 }
 
 exports.updateAUser = function(req, res){
-    console.log(req.params.userId)
+    // console.log(req.params.userId)
     var newUser = {}
     newUser = req.body
-    console.log(newUser)
+    // console.log(newUser)
     User.findByIdAndUpdate(req.params.userId, newUser, {new: true}, function(err, user){
         if(err) throw err
-        console.log(user)
+        // console.log(user)
         res.json(user)
     })
 }

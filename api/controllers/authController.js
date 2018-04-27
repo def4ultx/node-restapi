@@ -4,48 +4,66 @@ const bcrypt        = require('bcrypt')
 const saltRounds    = 10
 const jwt           = require('jsonwebtoken')
 const User          = mongoose.model('Users')
+const fs            = require('fs')
+const config        = global.config
+
+var privateKey = fs.readFileSync(config.privateKeyFilePath) 
+var publicKey = fs.readFileSync(config.publicKeyFilePath)   // get private key
+
+// Generate random JWT ID
+function generateJTI() {
+    let jti = ''
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    for (let i = 0; i < 16; i++) {
+        jti += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return jti
+}
 
 exports.authenticateUser = (req, res) => {
     // console.log(req.body)
     let query = { username: req.body.username }
-    User.findOne(query, (err ,user) => {
-        if (err) throw err
-        if (!user) {
-            res.status(403).send({
-                success: false,
-                message: 'unauthorized'
-            })
-            return
-        }
-        bcrypt.compare(req.body.password, user.password, (err, status) => {
-            if (err) throw err
+    User.findOne(query)
+        .then((user) => {
+            if (!user) {
+                throw Error ('invalid username')
+            }
+            bcrypt.compare(req.body.password, user.password)
+        })
+        .then((status) => {
             if (status == false) {
-                res.status(403).send({
-                    success: false,
-                    message: 'unauthorized'
-                })
+                throw Error ('unauthorized')
             } else {
                 const payload = {
-                    user: req.params.username
+                    user: req.params.username,
+                    iss: config.issuer,
+                    aud: config.audience,
+                    jti: generateJTI()
                 }
-                let token = jwt.sign(payload, 'secret', {
+                let token = jwt.sign(payload, privateKey, {
+                    algorithm: 'RS256',
                     expiresIn: 60 * 60 * 24
                 })
                 res.json({
-                    success: true,
                     token: token
                 })
             }
         })
-    })
+        .catch((err) => {
+            res.status(403).send({
+                result: 'failed',
+                message: err.message
+            })
+            return
+        })
 }
 
-exports.registerUser = function(req, res){
+exports.registerUser = function(req, res) {
     let query = { username: req.body.username }
     User.findOne(query, (err ,user) => {
         if (user) {
             res.status(409).send({
-                success: false,
+                result: 'failed',
                 message: 'username conflict'
             })
             return
@@ -77,10 +95,10 @@ exports.verifyAccessTokenMiddleware = function(req, res, next) {
         }
     }
     if (token) {
-        jwt.verify(token, 'secret', (err, decoded) => {
+        jwt.verify(token, publicKey, (err, decoded) => {
             if (err) {
                 return res.status(403).send({
-                    success: false,
+                    result: 'failed',
                     message: 'unauthorized'
                 })
             } else {
@@ -90,7 +108,7 @@ exports.verifyAccessTokenMiddleware = function(req, res, next) {
         })
     } else {
         return res.status(403).send({
-            success: false, 
+            result: 'failed',
             message: 'No token provided.' 
         })
     }
